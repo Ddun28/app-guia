@@ -1,0 +1,26 @@
+# Caché y builds
+node_modules/
+.next/
+out/
+
+# Variables de entorno
+.env
+.env.local
+.env*.local
+
+# Logs y caché
+npm-debug.log
+yarn-error.log
+.pnpm-debug.log
+
+# Sistema y control de versiones
+.git/
+.gitignore
+.DS_Store
+
+# Configuraciones de IDE
+.vscode/
+.idea/
+
+# Docker (opcional)
+docker-compose*.yml
