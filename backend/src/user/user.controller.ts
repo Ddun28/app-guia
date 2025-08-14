@@ -8,17 +8,23 @@ import {
   Delete, 
   UseInterceptors,
   Res,
-  HttpStatus
+  HttpStatus,
+  BadRequestException,
+  NotFoundException
 } from '@nestjs/common';
 import type { Response } from 'express'; 
 import { ResponseInterceptor } from '../common/interceptors/response.interceptor';
 import { UserService } from './user.service';
 import * as crypto from 'crypto';
+import { EmailService } from '../email/email.service';
 
 @Controller('users')
 @UseInterceptors(ResponseInterceptor)
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly emailService: EmailService, 
+  ) {}
 
   @Post()
   async create(@Body() body: { nombre: string; apellido: string; email: string; password: string }) {
@@ -39,13 +45,12 @@ export class UserController {
     
     const user = await this.userService.createUser(body);
     const userObject = user.toObject(); 
-    
+
     const verificationToken = this.generateVerificationToken();
     await this.userService.createVerification(user._id.toString(), verificationToken);
 
     this.sendVerificationEmail(user.email, verificationToken);
 
-    // Eliminamos la contraseña del resultado
     const { password, ...result } = userObject;
 
     return {
@@ -65,7 +70,6 @@ export class UserController {
       });
     }
 
-    // Convertimos verification._id a string
     const verificationId = verification._id.toString();
     const userId = verification.user_id.toString();
 
@@ -179,13 +183,42 @@ export class UserController {
     };
   }
 
+  @Post('verify')
+    async verifyEmailFromFrontend(@Body() { token }: { token: string }) {
+    const verification = await this.userService.findVerificationByToken(token);
+    
+    if (!verification) {
+        throw new BadRequestException('Token de verificación inválido o expirado');
+    }
+
+    const verificationId = verification._id.toString();
+    const userId = verification.user_id.toString();
+
+    const user = await this.userService.updateUser(userId, { 
+        email_verified_at: new Date() 
+    });
+
+    if (!user) {
+        throw new NotFoundException('Usuario no encontrado');
+    }
+
+    await this.userService.deleteVerification(verificationId);
+    
+    return {
+        message: 'Email verificado exitosamente',
+        result: user
+    };
+    }
+
   private generateVerificationToken(): string {
     return crypto.randomBytes(32).toString('hex');
   }
 
-  private sendVerificationEmail(email: string, token: string): void {
-    const verificationUrl = `http://tufrontend.com/verify-email/${token}`;
-    console.log(`Email de verificación enviado a ${email}: ${verificationUrl}`);
-    // Implementación real usaría Nodemailer, SendGrid, etc.
+   private async sendVerificationEmail(email: string, token: string): Promise<void> {
+    try {
+      await this.emailService.sendVerificationEmail(email, token);
+    } catch (error) {
+      console.error('Error en sendVerificationEmail:', error);
+    }
   }
 }

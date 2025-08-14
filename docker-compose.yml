@@ -1,4 +1,16 @@
+version: '3.8'
+
 services:
+  maildev:
+    image: maildev/maildev
+    container_name: app_maildev
+    ports:
+      - "1080:1080" 
+      - "1025:1025"
+    networks:
+      - app-network
+    restart: unless-stopped
+
   backend:
     container_name: app_backend
     build:
@@ -11,8 +23,15 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3000
+      EMAIL_HOST: maildev 
+      EMAIL_PORT: 1025   
+      EMAIL_USER: ""
+      EMAIL_PASSWORD: ""
+      EMAIL_FROM: "no-reply@appguia.com"
     volumes:
       - ./backend:/app:rw
+    depends_on:
+      - maildev
     networks:
       - app-network
     restart: unless-stopped

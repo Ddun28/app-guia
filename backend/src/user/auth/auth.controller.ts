@@ -13,15 +13,19 @@ export class AuthController {
   @Post('login')
   async login(@Request() req, @Res({ passthrough: true }) res: Response) {
     const { access_token } = await this.authService.login(req.user);
-    
+
     res.cookie('access_token', access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 86400000, // 1 día
+      maxAge: 86400000, 
     });
 
-    return { message: 'Login exitoso' };
+    return { 
+      message: 'Login exitoso',
+      access_token,
+      user: req.user 
+    };
   }
 
   @UseGuards(JwtAuthGuard)

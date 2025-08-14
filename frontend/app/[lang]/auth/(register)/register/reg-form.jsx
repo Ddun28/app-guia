@@ -10,13 +10,13 @@ import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-// import { addUser } from "@/action/auth-action";
 import { useRouter } from "next/navigation";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SiteLogo } from "@/components/svg";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { createUser } from "@/api/users/user"; 
 
-// Esquema de validación actualizado
+
 const schema = z.object({
   nombre: z.string().min(3, { message: "El nombre debe tener al menos 3 caracteres." }),
   apellido: z.string().min(3, { message: "El apellido debe tener al menos 3 caracteres." }),
@@ -32,7 +32,7 @@ const schema = z.object({
 });
 
 const RegForm = () => {
-  const [isPending, startTransition] = React.useTransition();
+  const [isPending, setIsPending] = useState(false);
   const [passwordType, setPasswordType] = useState("password");
   const [confirmPasswordType, setConfirmPasswordType] = useState("password");
   const isDesktop2xl = useMediaQuery("(max-width: 1530px)");
@@ -43,7 +43,6 @@ const RegForm = () => {
     handleSubmit,
     reset,
     formState: { errors },
-    watch
   } = useForm({
     resolver: zodResolver(schema),
     mode: "onChange",
@@ -57,29 +56,32 @@ const RegForm = () => {
     setConfirmPasswordType(prev => prev === "text" ? "password" : "text");
   };
 
-  const onSubmit = (data) => {
-    startTransition(async () => {
-      try {
-        // Eliminamos confirmPassword antes de enviar
-        const { confirmPassword, ...userData } = data;
-        const response = await addUser(userData);
-        
-        if (response?.status === "success") {
-          toast.success(response?.message);
-          reset();
-          router.push("/");
-        } else {
-          toast.error(response?.message || "Error al registrar el usuario");
-        }
-      } catch (error) {
-        toast.error("Error al conectar con el servidor");
+  const onSubmit = async (data) => {
+    setIsPending(true);
+    try {
+      // Eliminamos confirmPassword antes de enviar
+      const { confirmPassword, ...userData } = data;
+      
+      // Usamos nuestro servicio para crear el usuario
+      const response = await createUser(userData);
+      
+      if (response?.message) {
+        toast.success(response.message);
+        reset();
+      } else {
+        toast.error("Error al registrar el usuario");
       }
-    });
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast.error(error.response?.data?.message || "Error al registrar el usuario");
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (
     <div className="w-full">
-      <Link href="/dashboard" className="inline-block">
+      <Link href="/" className="inline-block">
         <SiteLogo className="h-10 w-10 2xl:w-14 2xl:h-14 text-primary" />
       </Link>
       
