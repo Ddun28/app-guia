@@ -1,4 +1,5 @@
 import { Schema, Document, Types } from 'mongoose';
+import { UserProfile, UserProfileModel } from './user-profile.schema';
 
 export const UserSchema = new Schema({
   nombre: { type: String, required: true },
@@ -6,19 +7,29 @@ export const UserSchema = new Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   email_verified_at: { type: Date, default: null },
-}, { timestamps: true });
+  profile: { 
+    type: Types.ObjectId, 
+    ref: 'UserProfile',
+    default: null
+  }
+}, { 
+  timestamps: true,
+  collection: 'users' 
+});
 
 export interface User extends Document {
-_id: Types.ObjectId;
+  _id: Types.ObjectId;
   nombre: string;
   apellido: string;
   email: string;
   password: string;
   email_verified_at?: Date | null;
+   profile?: Types.ObjectId | UserProfile | null;
   createdAt: Date;
   updatedAt: Date;
 }
 
+// Esquema de verificación (opcional)
 export const UserVerificationSchema = new Schema({
   user_id: { type: Types.ObjectId, ref: 'User', required: true },
   token: { type: String, required: true },
@@ -26,7 +37,7 @@ export const UserVerificationSchema = new Schema({
 
 export interface UserVerification extends Document {
   _id: Types.ObjectId;
-  user_id: Types.ObjectId;
+  user_id: Types.ObjectId | User;
   token: string;
   createdAt: Date;
   updatedAt: Date;

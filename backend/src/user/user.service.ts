@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User, UserVerification } from './user.mongo.schema';
+import { UserProfileModel } from './user-profile.schema';
 
 @Injectable()
 export class UserService {
@@ -23,20 +24,69 @@ export class UserService {
   async findAllUsers(): Promise<User[]> {
     return this.userModel.find().select('-password').exec();
   }
-
+ 
   async findUserByEmail(email: string): Promise<User | null> {
     return this.userModel.findOne({ email }).exec();
   }
 
-  async updateUser(id: string, data: Partial<User>): Promise<User | null> {
-    if (data.password) {
-      data.password = await bcrypt.hash(data.password, this.SALT_ROUNDS);
-    }
+  async findUserByEmailForAuth(email: string): Promise<User | null> {
     return this.userModel
-      .findByIdAndUpdate(id, data, { new: true })
-      .select('-password')
+      .findOne({ email })
+      .select('+password') 
       .exec();
   }
+
+  async findUserByEmailWithProfile(email: string): Promise<User | null> {
+    return this.userModel
+      .findOne({ email })
+      .select('-password') 
+      .populate({
+        path: 'profile',
+        model: 'UserProfile',
+        select: 'edad estado_civil sexo fecha_nacimiento telefono ubicacion',
+        options: { strictPopulate: false } 
+      })
+      .exec();
+  }
+
+  async updateUser(id: string, data: Partial<User & { password?: string }>): Promise<User | null> {
+  try {
+    // Validación de ID
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('ID de usuario inválido');
+    }
+
+    // Preparar datos de actualización
+    const updateData = { ...data };
+
+    // Hashear contraseña si se proporciona
+    if (updateData.password) {
+      updateData.password = await bcrypt.hash(updateData.password, this.SALT_ROUNDS);
+    }
+
+    // Ejecutar actualización
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+       { _id: new Types.ObjectId(id) },
+      updateData,
+      { 
+        new: true,
+        runValidators: true
+      }
+    ).select('-password').exec();
+
+    if (!updatedUser) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    return updatedUser;
+  } catch (error) {
+    console.error('Error en UserService.updateUser:', {
+      id,
+      error: error.message
+    });
+    throw error;
+  }
+}
 
   async comparePasswords(plainPassword: string, hashedPassword: string): Promise<boolean> {
     return bcrypt.compare(plainPassword, hashedPassword);

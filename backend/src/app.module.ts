@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { EmailModule } from './email/email.module';
 import { AuthModule } from './user/auth/auth.module';
+import { UserProfilesModule } from './user/user-profiles/user-profiles.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AuthModule } from './user/auth/auth.module';
     }),
     DatabaseModule, 
     UserModule,
+    UserProfilesModule,
     AuthModule,
     EmailModule
   ],

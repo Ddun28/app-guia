@@ -10,13 +10,25 @@ import {
   Res,
   HttpStatus,
   BadRequestException,
-  NotFoundException
+  NotFoundException,
+  UseGuards,
+  Request,
+  InternalServerErrorException,
+  HttpException,
+  ValidationPipe,
+  UsePipes
 } from '@nestjs/common';
 import type { Response } from 'express'; 
 import { ResponseInterceptor } from '../common/interceptors/response.interceptor';
 import { UserService } from './user.service';
 import * as crypto from 'crypto';
 import { EmailService } from '../email/email.service';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { UpdateFullProfileDto } from './dto/update-full-profile.dto'; 
+import { UserProfilesService } from './user-profiles/user-profiles.service';
+import { User } from './user.mongo.schema';
+import * as bcrypt from 'bcrypt'; 
+import mongoose from 'mongoose';
 
 @Controller('users')
 @UseInterceptors(ResponseInterceptor)
@@ -24,9 +36,10 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly emailService: EmailService, 
+    private readonly userProfilesService: UserProfilesService, 
   ) {}
 
-  @Post()
+    @Post()
   async create(@Body() body: { nombre: string; apellido: string; email: string; password: string }) {
     if (!body.email) {
       return {
@@ -64,10 +77,7 @@ export class UserController {
     const verification = await this.userService.findVerificationByToken(token);
     
     if (!verification) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        message: 'Token de verificación inválido o expirado',
-        result: null
-      });
+      throw new BadRequestException('Token de verificación inválido o expirado');
     }
 
     const verificationId = verification._id.toString();
@@ -78,10 +88,7 @@ export class UserController {
     });
 
     if (!user) {
-      return res.status(HttpStatus.NOT_FOUND).json({
-        message: 'Usuario no encontrado',
-        result: null
-      });
+      throw new NotFoundException('Usuario no encontrado');
     }
 
     await this.userService.deleteVerification(verificationId);
@@ -97,26 +104,17 @@ export class UserController {
     const user = await this.userService.findUserByEmail(email);
     
     if (!user) {
-      return {
-        message: 'Usuario no encontrado',
-        result: null
-      };
+      throw new NotFoundException('Usuario no encontrado');
     }
 
-    // Convertimos user._id a string
     const userId = user._id.toString();
 
     if (user.email_verified_at) {
-      return {
-        message: 'Este email ya está verificado',
-        result: null
-      };
+      throw new BadRequestException('Este email ya está verificado');
     }
 
-    // Eliminar verificaciones anteriores - Implementamos esta función en el servicio
     await this.userService.deleteVerificationsForUser(userId);
     
-    // Crear y enviar nueva verificación
     const verificationToken = this.generateVerificationToken();
     await this.userService.createVerification(userId, verificationToken);
     this.sendVerificationEmail(user.email, verificationToken);
@@ -127,7 +125,22 @@ export class UserController {
     };
   }
 
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async getCurrentUser(@Request() req) {
+    const user = await this.userService.findUserById(req.user._id);
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+    const { password, ...result } = user.toObject();
+    return {
+      message: 'Usuario obtenido exitosamente',
+      result
+    };
+  }
+
   @Get()
+  @UseGuards(JwtAuthGuard)
   async findAll() {
     const users = await this.userService.findAllUsers();
     return {
@@ -138,87 +151,128 @@ export class UserController {
     };
   }
 
-  @Get(':email')
-  async findByEmail(@Param('email') email: string) {
-    const user = await this.userService.findUserByEmail(email);
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  async findById(@Param('id') id: string) {
+    const user = await this.userService.findUserById(id);
     if (!user) {
-      return {
-        message: 'Usuario no encontrado',
-        result: null
-      };
+      throw new NotFoundException('Usuario no encontrado');
     }
+    const { password, ...result } = user.toObject();
     return {
       message: 'Usuario encontrado exitosamente',
-      result: user
+      result
     };
   }
 
-  @Put(':id')
-  async update(@Param('id') id: string, @Body() body: Partial<{ nombre: string; apellido: string; email: string }>) {
-    const updatedUser = await this.userService.updateUser(id, body);
-    if (!updatedUser) {
-      return {
-        message: 'Usuario no encontrado',
-        result: null
+  @Put('me/profile')
+  @UseGuards(JwtAuthGuard)
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async updateFullProfile(
+    @Request() req,
+    @Body() body: UpdateFullProfileDto
+  ) {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) throw new BadRequestException('ID de usuario no encontrado');
+
+      // Actualizar usuario (campos básicos)
+      const updatedUser = await this.userService.updateUser(userId, {
+        nombre: body.nombre,
+        apellido: body.apellido,
+        email: body.email
+      });
+
+      // Preparar datos para perfil (Mongoose convertirá automáticamente)
+      const profileData = {
+        edad: body.edad,
+        estado_civil: body.estado_civil,
+        sexo: body.sexo,
+        fecha_nacimiento: body.fecha_nacimiento, // Ya es Date por el @Transform
+        telefono: body.telefono,
+        ubicacion: body.ubicacion
       };
+
+      // Actualizar o crear perfil
+      let profileResult;
+      try {
+        profileResult = await this.userProfilesService.update(userId, profileData);
+      } catch (error) {
+        if (error.message.includes('not found')) {
+          profileResult = await this.userProfilesService.create({
+            user_id: userId,
+            ...profileData
+          });
+        } else {
+          throw error;
+        }
+      }
+
+      return {
+        message: 'Perfil actualizado exitosamente',
+        data: {
+          user: updatedUser,
+          profile: profileResult
+        }
+      };
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
     }
-    return {
-      message: 'Usuario actualizado exitosamente',
-      result: updatedUser
-    };
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    const deletedUser = await this.userService.updateUser(id, { email_verified_at: null });
+  @Delete('me')
+  @UseGuards(JwtAuthGuard)
+  async deactivateAccount(@Request() req) {
+    const deletedUser = await this.userService.updateUser(req.user._id, { 
+      email_verified_at: null,
+    });
     if (!deletedUser) {
-      return {
-        message: 'Usuario no encontrado',
-        result: null
-      };
+      throw new NotFoundException('Usuario no encontrado');
     }
     return {
-      message: 'Usuario marcado como no verificado exitosamente',
-      result: deletedUser
+      message: 'Cuenta desactivada exitosamente',
+      result: null
     };
   }
 
   @Post('verify')
-    async verifyEmailFromFrontend(@Body() { token }: { token: string }) {
+  async verifyEmailFromFrontend(@Body() { token }: { token: string }) {
     const verification = await this.userService.findVerificationByToken(token);
     
     if (!verification) {
-        throw new BadRequestException('Token de verificación inválido o expirado');
+      throw new BadRequestException('Token de verificación inválido o expirado');
     }
 
     const verificationId = verification._id.toString();
     const userId = verification.user_id.toString();
 
     const user = await this.userService.updateUser(userId, { 
-        email_verified_at: new Date() 
+      email_verified_at: new Date() 
     });
 
     if (!user) {
-        throw new NotFoundException('Usuario no encontrado');
+      throw new NotFoundException('Usuario no encontrado');
     }
 
     await this.userService.deleteVerification(verificationId);
     
     return {
-        message: 'Email verificado exitosamente',
-        result: user
+      message: 'Email verificado exitosamente',
+      result: user
     };
-    }
+  }
 
   private generateVerificationToken(): string {
     return crypto.randomBytes(32).toString('hex');
   }
 
-   private async sendVerificationEmail(email: string, token: string): Promise<void> {
+  private async sendVerificationEmail(email: string, token: string): Promise<void> {
     try {
       await this.emailService.sendVerificationEmail(email, token);
     } catch (error) {
       console.error('Error en sendVerificationEmail:', error);
+      throw new Error('Error al enviar el email de verificación');
     }
   }
 }

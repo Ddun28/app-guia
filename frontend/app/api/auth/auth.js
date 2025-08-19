@@ -7,7 +7,7 @@ export const login = (credentials) =>
     }
   })
   .then(response => {
-    document.cookie = `auth_token=${response.data.access_token}; path=/; max-age=86400; Secure; SameSite=Strict`;
+    document.cookie = `access_token=${response.data.access_token}; path=/; max-age=86400; Secure; SameSite=Strict`;
     return response.data;
   });
 
@@ -18,11 +18,25 @@ export const logout = () =>
     }
   })
   .then(response => {
-    document.cookie = 'auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     document.cookie = 'user_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     return response.data;
   });
 
-export const getProfile = () => 
-  api.get('/auth/profile')
-  .then(response => response.data);
+export const getProfile = () => {
+  
+  const token = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('access_token='))
+    ?.split('=')[1];
+  
+
+  return api.get('/auth/profile')
+    .then(response => {
+      return response.data;
+    })
+    .catch(error => {
+      console.error('Error fetching profile:', error);
+      throw error;
+    })
+};

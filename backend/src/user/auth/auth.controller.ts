@@ -3,11 +3,15 @@ import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard'; 
 import type { Response } from 'express';  
 import { JwtAuthGuard } from './guards/jwt-auth.guard'; 
+import { UserService } from '../user.service';
 
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UserService
+  ) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
@@ -22,7 +26,7 @@ export class AuthController {
     });
 
     return { 
-      message: 'Login exitoso',
+      message: 'Inicio de Sesión exitoso',
       access_token,
       user: req.user 
     };
@@ -37,7 +41,11 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
+  async getProfile(@Request() req) {
+    const user = await this.userService.findUserByEmailWithProfile(req.user.email);
+
+    const { password, ...userWithoutPassword } = user!.toObject(); 
+    
+    return userWithoutPassword;
   }
 }

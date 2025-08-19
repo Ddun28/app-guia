@@ -1,4 +1,4 @@
-import { DashBoard } from "@/components/svg";
+import { DashBoard, User } from "@/components/svg";
 
 export const menusConfig = {
   mainNav: [
@@ -7,6 +7,11 @@ export const menusConfig = {
       icon: DashBoard,
       href: "/dashboard",
     },
+    {
+      title: "Perfil",
+      icon: User,
+      href: "/user-profile",
+    },
   ],
   sidebarNav: {
     modern: [
@@ -14,6 +19,11 @@ export const menusConfig = {
         title: "Dashboard",
         icon: DashBoard,
         href: "/dashboard",
+      },
+      {
+        title: "Mi Perfil",
+        icon: User,
+        href: "/user-profile",
       },
     ],
     classic: [
@@ -25,6 +35,15 @@ export const menusConfig = {
         title: "Dashboard",
         icon: DashBoard,
         href: "/dashboard",
+      },
+      {
+        isHeader: true,
+        title: "Cuenta",
+      },
+      {
+        title: "Mi Perfil",
+        icon: User,
+        href: "/user-profile",
       },
     ],
   },

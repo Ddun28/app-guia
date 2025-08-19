@@ -11,7 +11,7 @@ api.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
     const cookieToken = document.cookie
       .split('; ')
-      .find(row => row.startsWith('auth_token='))
+      .find(row => row.startsWith('access_token='))
       ?.split('=')[1];
     
     if (cookieToken) {
@@ -58,7 +58,7 @@ api.interceptors.response.use(
               icon: '🔒'
             });
 
-            document.cookie = 'auth_token=; Max-Age=0; path=/';
+            document.cookie = 'access_token=; Max-Age=0; path=/';
             document.cookie = 'user_role=; Max-Age=0; path=/';
             localStorage.removeItem('access_token');
             sessionStorage.clear();

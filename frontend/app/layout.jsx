@@ -1,4 +1,4 @@
-import "../assets/css/globals.css";
+import "./assets/css/globals.css";
 import { Inter } from "next/font/google";
 import { siteConfig } from "@/config/site";
 import Providers from "@/provider/providers";
@@ -17,13 +17,13 @@ export const metadata = {
   description: siteConfig.description,
 };
 
-export default function RootLayout({ children, params: { lang } }) {
+export default function RootLayout({ children}) {
   return (
-    <html lang={lang}>
+    <html>
       <AuthProvider>
         <TanstackProvider>
           <Providers>
-            <DirectionProvider lang={lang}>{children}</DirectionProvider>
+            <DirectionProvider>{children}</DirectionProvider>
           </Providers>
         </TanstackProvider>
       </AuthProvider>

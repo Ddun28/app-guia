@@ -20,8 +20,8 @@ export const updateUser = async (id, userData) => {
   return response.data.data;
 };
 
-export const updateUserProfile = async (passwordData) => {
-  const response = await api.put("/users/profile", passwordData);
+export const updateUserProfile = async (profileData) => {
+  const response = await api.put("/users/me/profile", profileData);
   return response.data.data;
 };
 

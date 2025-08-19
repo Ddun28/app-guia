@@ -18,6 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { login } from "@/app/api/auth/auth"; 
+import { useAuthStore } from '@/store/auth.store';
 
 // Iconos para login social
 import googleIcon from "@/public/images/auth/google.png";
@@ -49,32 +50,40 @@ const LogInForm = () => {
     },
   });
 
+      const { loadUserProfile } = useAuthStore();
+
     const onSubmit = async (data) => {
-    startTransition(async () => {
-      try {
-        const response = await login({
-          email: data.email,
-          password: data.password,
-        });
+  startTransition(async () => {
+    try {
+      const response = await login({
+        email: data.email,
+        password: data.password,
+      });
 
-        if (response?.error) {
-          toast.error(response.error);
-          return;
-        }
+      if (response?.error) {
+        toast.error(response.error);
+        return;
+      }
 
-        if (response?.access_token) {
+      if (response?.access_token) {
+        try {
+          await loadUserProfile(response.access_token);
           toast.success(response.message || "Inicio de sesión exitoso");
           router.push("/dashboard");
-
-        } else {
-          toast.error("Error inesperado al iniciar sesión");
+        } catch (profileError) {
+          console.error("Error loading profile:", profileError);
+          toast.error("Error al cargar el perfil del usuario");
         }
-      } catch (error) {
-        toast.error("Error al iniciar sesión");
-        console.error("Login error:", error);
+      } else {
+        toast.error("Error inesperado al iniciar sesión");
       }
-    });
-  };
+    } catch (error) {
+      if (!error.isAxiosError) {
+        console.error("Non-API error:", error);
+      }
+    }
+  });
+};
 
   const handleSocialLogin = (provider) => {
     signIn(provider, {
