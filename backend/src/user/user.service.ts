@@ -8,6 +8,7 @@ import { UserProfileModel } from './user-profile.schema';
 @Injectable()
 export class UserService {
   private readonly SALT_ROUNDS = 10;
+  
   constructor(
     @InjectModel('User') private userModel: Model<User>,
     @InjectModel('UserVerification') private verificationModel: Model<UserVerification>,
@@ -49,44 +50,53 @@ export class UserService {
       .exec();
   }
 
-  async updateUser(id: string, data: Partial<User & { password?: string }>): Promise<User | null> {
-  try {
-    // Validación de ID
-    if (!Types.ObjectId.isValid(id)) {
-      throw new BadRequestException('ID de usuario inválido');
-    }
-
-    // Preparar datos de actualización
-    const updateData = { ...data };
-
-    // Hashear contraseña si se proporciona
-    if (updateData.password) {
-      updateData.password = await bcrypt.hash(updateData.password, this.SALT_ROUNDS);
-    }
-
-    // Ejecutar actualización
-    const updatedUser = await this.userModel.findByIdAndUpdate(
-       { _id: new Types.ObjectId(id) },
-      updateData,
-      { 
-        new: true,
-        runValidators: true
-      }
-    ).select('-password').exec();
-
-    if (!updatedUser) {
-      throw new NotFoundException('Usuario no encontrado');
-    }
-
-    return updatedUser;
-  } catch (error) {
-    console.error('Error en UserService.updateUser:', {
-      id,
-      error: error.message
-    });
-    throw error;
+  async findUserByResetToken(token: string): Promise<User | null> {
+    return this.userModel
+      .findOne({ 
+        reset_password_token: token,
+        reset_password_expires: { $gt: new Date() }
+      })
+      .exec();
   }
-}
+
+  async updateUser(id: string, data: Partial<User & { password?: string }>): Promise<User | null> {
+    try {
+      // Validación de ID
+      if (!Types.ObjectId.isValid(id)) {
+        throw new BadRequestException('ID de usuario inválido');
+      }
+
+      // Preparar datos de actualización
+      const updateData = { ...data };
+
+      // Hashear contraseña si se proporciona
+      if (updateData.password) {
+        updateData.password = await bcrypt.hash(updateData.password, this.SALT_ROUNDS);
+      }
+
+      // Ejecutar actualización
+      const updatedUser = await this.userModel.findByIdAndUpdate(
+        { _id: new Types.ObjectId(id) },
+        updateData,
+        { 
+          new: true,
+          runValidators: true
+        }
+      ).select('-password').exec();
+
+      if (!updatedUser) {
+        throw new NotFoundException('Usuario no encontrado');
+      }
+
+      return updatedUser;
+    } catch (error) {
+      console.error('Error en UserService.updateUser:', {
+        id,
+        error: error.message
+      });
+      throw error;
+    }
+  }
 
   async comparePasswords(plainPassword: string, hashedPassword: string): Promise<boolean> {
     return bcrypt.compare(plainPassword, hashedPassword);
@@ -100,15 +110,15 @@ export class UserService {
     return verification.save();
   }
 
-    async deleteVerificationsForUser(userId: string): Promise<void> {
+  async deleteVerificationsForUser(userId: string): Promise<void> {
     await this.verificationModel.deleteMany({ 
       user_id: new Types.ObjectId(userId) 
     }).exec();
   }
 
   async deleteVerification(id: string): Promise<void> {
-  await this.verificationModel.findByIdAndDelete(id).exec();
-}
+    await this.verificationModel.findByIdAndDelete(id).exec();
+  }
 
   async findVerificationByToken(token: string): Promise<UserVerification | null> {
     return this.verificationModel.findOne({ token }).exec();

@@ -24,13 +24,10 @@ export class UserProfilesService {
       });
       
       const savedProfile = await createdProfile.save();
-      console.log('Perfil creado ID:', savedProfile._id);
-
-      // ✅ SINCRONIZAR: Actualizar referencia en el usuario
+      
       await this.userService.updateUser(createUserProfileDto.user_id, {
         profile: savedProfile._id
       });
-      console.log('Referencia actualizada en usuario');
 
       return savedProfile;
     } catch (error) {
@@ -59,7 +56,6 @@ export class UserProfilesService {
     updateData: UpdateUserProfileDto,
   ): Promise<UserProfile> {
     try {
-      console.log('Actualizando perfil para usuario:', userId);
       
       const result = await this.userProfileModel.findOneAndUpdate(
         { user_id: new Types.ObjectId(userId) },
@@ -76,13 +72,10 @@ export class UserProfilesService {
         throw new Error('No se pudo actualizar el perfil');
       }
 
-      console.log('Perfil actualizado ID:', result._id);
 
-      // ✅ SINCRONIZAR: Asegurar referencia en el usuario
       await this.userService.updateUser(userId, {
         profile: result._id
-      });
-      console.log('Referencia actualizada en usuario');
+      });;
 
       return result;
     } catch (error) {

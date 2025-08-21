@@ -39,7 +39,7 @@ export class UserController {
     private readonly userProfilesService: UserProfilesService, 
   ) {}
 
-    @Post()
+  @Post()
   async create(@Body() body: { nombre: string; apellido: string; email: string; password: string }) {
     if (!body.email) {
       return {
@@ -125,6 +125,97 @@ export class UserController {
     };
   }
 
+  @Post('forgot-password')
+  async forgotPassword(@Body() { email }: { email: string }) {
+    if (!email) {
+      throw new BadRequestException('El email es requerido');
+    }
+
+    const user = await this.userService.findUserByEmail(email);
+    if (!user) {
+      // Por seguridad, no revelamos si el email existe o no
+      return {
+        message: 'Si el email existe en nuestro sistema, recibirás un enlace para restablecer tu contraseña',
+        result: null
+      };
+    }
+
+    // Generar token de restablecimiento
+    const resetToken = this.generateResetToken();
+    const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hora de expiración
+
+    // Guardar token en el usuario
+    await this.userService.updateUser(user._id.toString(), {
+      reset_password_token: resetToken,
+      reset_password_expires: resetTokenExpiry
+    });
+
+    // Enviar email
+    await this.sendPasswordResetEmail(user.email, resetToken);
+
+    return {
+      message: 'Si el email existe en nuestro sistema, recibirás un enlace para restablecer tu contraseña',
+      result: null
+    };
+  }
+
+  @Post('reset-password/:token')
+  async resetPassword(
+    @Param('token') token: string,
+    @Body() { password }: { password: string }
+  ) {
+    if (!token) {
+      throw new BadRequestException('Token de restablecimiento requerido');
+    }
+
+    if (!password || password.length < 6) {
+      throw new BadRequestException('La contraseña debe tener al menos 6 caracteres');
+    }
+
+    // Buscar usuario por token y verificar expiración
+    const user = await this.userService.findUserByResetToken(token);
+    if (!user) {
+      throw new BadRequestException('Token de restablecimiento inválido o expirado');
+    }
+
+    if (user.reset_password_expires && user.reset_password_expires < new Date()) {
+      throw new BadRequestException('Token de restablecimiento expirado');
+    }
+
+    // Actualizar contraseña y limpiar token
+    await this.userService.updateUser(user._id.toString(), {
+      password: password,
+      reset_password_token: null,
+      reset_password_expires: null
+    });
+
+    return {
+      message: 'Contraseña restablecida exitosamente',
+      result: null
+    };
+  }
+
+  @Post('verify-reset-token/:token')
+  async verifyResetToken(@Param('token') token: string) {
+    if (!token) {
+      throw new BadRequestException('Token de restablecimiento requerido');
+    }
+
+    const user = await this.userService.findUserByResetToken(token);
+    if (!user) {
+      throw new BadRequestException('Token de restablecimiento inválido');
+    }
+
+    if (user.reset_password_expires && user.reset_password_expires < new Date()) {
+      throw new BadRequestException('Token de restablecimiento expirado');
+    }
+
+    return {
+      message: 'Token válido',
+      result: { email: user.email }
+    };
+  }
+
   @Get('me')
   @UseGuards(JwtAuthGuard)
   async getCurrentUser(@Request() req) {
@@ -176,19 +267,38 @@ export class UserController {
       const userId = req.user?.userId;
       if (!userId) throw new BadRequestException('ID de usuario no encontrado');
 
-      // Actualizar usuario (campos básicos)
-      const updatedUser = await this.userService.updateUser(userId, {
+      // Validar que las contraseñas coincidan si se proporcionan
+      if (body.new_password || body.new_password_confirmation) {
+        if (!body.new_password || !body.new_password_confirmation) {
+          throw new BadRequestException('Ambos campos de contraseña son requeridos');
+        }
+        
+        if (body.new_password !== body.new_password_confirmation) {
+          throw new BadRequestException('Las contraseñas no coinciden');
+        }
+      }
+
+      // Preparar datos de usuario para actualización
+      const userUpdateData: any = {
         nombre: body.nombre,
         apellido: body.apellido,
         email: body.email
-      });
+      };
 
-      // Preparar datos para perfil (Mongoose convertirá automáticamente)
+      // Agregar contraseña solo si se proporciona
+      if (body.new_password) {
+        userUpdateData.password = body.new_password;
+      }
+
+      // Actualizar usuario (campos básicos)
+      const updatedUser = await this.userService.updateUser(userId, userUpdateData);
+
+      // Preparar datos para perfil
       const profileData = {
         edad: body.edad,
         estado_civil: body.estado_civil,
         sexo: body.sexo,
-        fecha_nacimiento: body.fecha_nacimiento, // Ya es Date por el @Transform
+        fecha_nacimiento: body.fecha_nacimiento,
         telefono: body.telefono,
         ubicacion: body.ubicacion
       };
@@ -267,12 +377,25 @@ export class UserController {
     return crypto.randomBytes(32).toString('hex');
   }
 
+  private generateResetToken(): string {
+    return crypto.randomBytes(32).toString('hex');
+  }
+
   private async sendVerificationEmail(email: string, token: string): Promise<void> {
     try {
       await this.emailService.sendVerificationEmail(email, token);
     } catch (error) {
       console.error('Error en sendVerificationEmail:', error);
       throw new Error('Error al enviar el email de verificación');
+    }
+  }
+
+  private async sendPasswordResetEmail(email: string, token: string): Promise<void> {
+    try {
+      await this.emailService.sendPasswordResetEmail(email, token);
+    } catch (error) {
+      console.error('Error en sendPasswordResetEmail:', error);
+      throw new InternalServerErrorException('Error al enviar el email de restablecimiento');
     }
   }
 }

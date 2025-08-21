@@ -1,9 +1,10 @@
-import { Controller, Post, Request, Res, UseGuards, Get } from '@nestjs/common';
+import { Controller, Post, Request, Res, UseGuards, Get, UseFilters } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard'; 
 import type { Response } from 'express';  
 import { JwtAuthGuard } from './guards/jwt-auth.guard'; 
 import { UserService } from '../user.service';
+import { AuthExceptionFilter } from 'src/common/filters/auth-exception.filter';
 
 
 @Controller('auth')
@@ -14,6 +15,7 @@ export class AuthController {
   ) {}
 
   @UseGuards(LocalAuthGuard)
+  @UseFilters(new AuthExceptionFilter())
   @Post('login')
   async login(@Request() req, @Res({ passthrough: true }) res: Response) {
     const { access_token } = await this.authService.login(req.user);

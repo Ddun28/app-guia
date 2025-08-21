@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
+
 const HeaderSearch = ({ open, setOpen }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -27,7 +28,7 @@ const HeaderSearch = ({ open, setOpen }) => {
         <Command>
           <div className="flex items-center border-b border-border">
             <CommandInput
-              placeholder=""
+              placeholder="Buscar en la aplicación..."
               className="h-14"
               inputWrapper="px-3.5 flex-1 border-none"
             />
@@ -47,10 +48,56 @@ const HeaderSearch = ({ open, setOpen }) => {
             </div>
           </div>
           <CommandList className="py-5 px-7 max-h-[500px]">
-            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandEmpty>No se encontraron resultados.</CommandEmpty>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {/* Sección: Navegación Principal */}
               <CommandGroup
-                heading="Populer Searches"
+                heading="Navegación Principal"
+                className="[&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:font-normal [&_[cmdk-group-heading]]:text-default-400 [&_[cmdk-group-heading]]:mb-2.5
+                [&_[cmdk-group-heading]]:uppercase    [&_[cmdk-group-heading]]:tracking-widest
+                "
+              >
+                <CommandItem className="aria-selected:bg-transparent p-0 mb-2.5">
+                  <Link
+                    href="/dashboard"
+                    className="flex gap-1 items-center px-2 text-default-500 hover:text-primary "
+                  >
+                    <Icon icon="heroicons:chart-bar" />
+                    <span>Dashboard</span>
+                  </Link>
+                </CommandItem>
+                <CommandItem className="aria-selected:bg-transparent p-0 mb-2.5">
+                  <Link
+                    href="/nutrition-guide"
+                    className="flex gap-1 items-center px-2 text-default-500 hover:text-primary "
+                  >
+                    <Icon icon="heroicons:book-open" />
+                    <span>Guía de Nutrición</span>
+                  </Link>
+                </CommandItem>
+                <CommandItem className="aria-selected:bg-transparent p-0 mb-2.5">
+                  <Link
+                    href="/portion-calculator"
+                    className="flex gap-1 items-center px-2 text-default-500 hover:text-primary "
+                  >
+                    <Icon icon="heroicons:calculator" />
+                    <span>Calculadora de Porciones</span>
+                  </Link>
+                </CommandItem>
+                <CommandItem className="aria-selected:bg-transparent p-0">
+                  <Link
+                    href="/user-profile"
+                    className="flex gap-1 items-center px-2 text-default-500 hover:text-primary "
+                  >
+                    <Icon icon="heroicons:user" />
+                    <span>Mi Perfil</span>
+                  </Link>
+                </CommandItem>
+              </CommandGroup>
+    
+              {/* Sección: Búsquedas Populares 
+              <CommandGroup
+                heading="Búsquedas Populares"
                 className="[&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:font-normal [&_[cmdk-group-heading]]:text-default-400 [&_[cmdk-group-heading]]:mb-2.5
                 [&_[cmdk-group-heading]]:uppercase    [&_[cmdk-group-heading]]:tracking-widest
                 "
@@ -61,7 +108,7 @@ const HeaderSearch = ({ open, setOpen }) => {
                     className="flex gap-1 items-center px-2 text-default-500 hover:text-primary "
                   >
                     <Icon icon="heroicons:calendar-days" />
-                    <span>Calendar</span>
+                    <span>Calendario</span>
                   </Link>
                 </CommandItem>
                 <CommandItem className="aria-selected:bg-transparent p-0 mb-2.5">
@@ -70,7 +117,7 @@ const HeaderSearch = ({ open, setOpen }) => {
                     className="flex gap-1 items-center px-2 text-default-500 hover:text-primary "
                   >
                     <Icon icon="heroicons:chart-bar" />
-                    <span>Analytics</span>
+                    <span>Analíticas</span>
                   </Link>
                 </CommandItem>
                 <CommandItem className="aria-selected:bg-transparent p-0 mb-2.5">
@@ -82,18 +129,20 @@ const HeaderSearch = ({ open, setOpen }) => {
                     <span>eCommerce</span>
                   </Link>
                 </CommandItem>
-                <CommandItem className="aria-selected:bg-transparent p-0 ">
+                <CommandItem className="aria-selected:bg-transparent p-0">
                   <Link
                     href="/project"
                     className="flex gap-1 items-center px-2 text-default-500 hover:text-primary "
                   >
                     <Icon icon="heroicons:building-library" />
-                    <span>Project Page</span>
+                    <span>Página de Proyecto</span>
                   </Link>
                 </CommandItem>
               </CommandGroup>
+                */}
+              {/* Sección: Aplicaciones y Páginas 
               <CommandGroup
-                heading="Apps & Pages"
+                heading="Aplicaciones y Páginas"
                 className="[&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:font-normal [&_[cmdk-group-heading]]:text-default-400 [&_[cmdk-group-heading]]:mb-2.5
                 [&_[cmdk-group-heading]]:uppercase    [&_[cmdk-group-heading]]:tracking-widest
                 "
@@ -122,7 +171,7 @@ const HeaderSearch = ({ open, setOpen }) => {
                     className="flex gap-1 items-center px-2 text-default-500 hover:text-primary "
                   >
                     <Icon icon="heroicons:user" />
-                    <span>Sign In</span>
+                    <span>Iniciar Sesión</span>
                   </Link>
                 </CommandItem>
                 <CommandItem className="aria-selected:bg-transparent p-0">
@@ -135,8 +184,10 @@ const HeaderSearch = ({ open, setOpen }) => {
                   </Link>
                 </CommandItem>
               </CommandGroup>
+                */}
+              {/* Sección: Elementos de UI 
               <CommandGroup
-                heading="UI Elements"
+                heading="Elementos de UI"
                 className="[&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:font-normal [&_[cmdk-group-heading]]:text-default-400 [&_[cmdk-group-heading]]:mb-2.5
                 [&_[cmdk-group-heading]]:uppercase    [&_[cmdk-group-heading]]:tracking-widest"
               >
@@ -146,7 +197,7 @@ const HeaderSearch = ({ open, setOpen }) => {
                     className="flex gap-1 items-center px-2 text-default-500 hover:text-primary "
                   >
                     <Icon icon="heroicons:bars-3" />
-                    <span>Accordion</span>
+                    <span>Acordeón</span>
                   </Link>
                 </CommandItem>
                 <CommandItem className="aria-selected:bg-transparent p-0 mb-1">
@@ -164,7 +215,7 @@ const HeaderSearch = ({ open, setOpen }) => {
                     className="flex gap-1 items-center px-2 text-default-500 hover:text-primary "
                   >
                     <Icon icon="heroicons:megaphone" />
-                    <span>Alert</span>
+                    <span>Alertas</span>
                   </Link>
                 </CommandItem>
                 <CommandItem className="aria-selected:bg-transparent p-0 mb-1">
@@ -173,12 +224,14 @@ const HeaderSearch = ({ open, setOpen }) => {
                     className="flex gap-1 items-center px-2 text-default-500 hover:text-primary "
                   >
                     <Icon icon="heroicons:document-text" />
-                    <span>Pagination</span>
+                    <span>Paginación</span>
                   </Link>
                 </CommandItem>
               </CommandGroup>
+                */}
+              {/* Sección: Formularios y Tablas 
               <CommandGroup
-                heading="Forms & Tables"
+                heading="Formularios y Tablas"
                 className="[&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:font-normal [&_[cmdk-group-heading]]:text-default-400 [&_[cmdk-group-heading]]:mb-2.5
                 [&_[cmdk-group-heading]]:uppercase    [&_[cmdk-group-heading]]:tracking-widest"
               >
@@ -188,7 +241,7 @@ const HeaderSearch = ({ open, setOpen }) => {
                     className="flex gap-1 items-center px-2 text-default-500 hover:text-primary "
                   >
                     <Icon icon="heroicons:table-cells" />
-                    <span>Simple Table</span>
+                    <span>Tabla Simple</span>
                   </Link>
                 </CommandItem>
                 <CommandItem className="aria-selected:bg-transparent p-0 mb-2.5">
@@ -197,7 +250,7 @@ const HeaderSearch = ({ open, setOpen }) => {
                     className="flex gap-1 items-center px-2 text-default-500 hover:text-primary "
                   >
                     <Icon icon="heroicons:table-cells" />
-                    <span>Tailwind Ui Table</span>
+                    <span>Tabla Tailwind UI</span>
                   </Link>
                 </CommandItem>
                 <CommandItem className="aria-selected:bg-transparent p-0 mb-2.5">
@@ -206,7 +259,7 @@ const HeaderSearch = ({ open, setOpen }) => {
                     className="flex gap-1 items-center px-2 text-default-500 hover:text-primary "
                   >
                     <Icon icon="heroicons:table-cells" />
-                    <span>Tanstack Table</span>
+                    <span>Tabla Tanstack</span>
                   </Link>
                 </CommandItem>
                 <CommandItem className="aria-selected:bg-transparent p-0">
@@ -215,10 +268,11 @@ const HeaderSearch = ({ open, setOpen }) => {
                     className="flex gap-1 items-center px-2 text-default-500 hover:text-primary "
                   >
                     <Icon icon="heroicons:clipboard-document-list" />
-                    <span>Forms</span>
+                    <span>Formularios</span>
                   </Link>
                 </CommandItem>
               </CommandGroup>
+              */}
             </div>
           </CommandList>
         </Command>

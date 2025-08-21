@@ -52,38 +52,45 @@ const LogInForm = () => {
 
       const { loadUserProfile } = useAuthStore();
 
-    const onSubmit = async (data) => {
-  startTransition(async () => {
-    try {
-      const response = await login({
-        email: data.email,
-        password: data.password,
-      });
+   const onSubmit = async (data) => {
+    startTransition(async () => {
+      try {
+        const response = await login({
+          email: data.email,
+          password: data.password,
+        });
 
-      if (response?.error) {
-        toast.error(response.error);
-        return;
-      }
-
-      if (response?.access_token) {
-        try {
-          await loadUserProfile(response.access_token);
-          toast.success(response.message || "Inicio de sesión exitoso");
-          router.push("/dashboard");
-        } catch (profileError) {
-          console.error("Error loading profile:", profileError);
-          toast.error("Error al cargar el perfil del usuario");
+        if (response?.error) {
+          toast.error(response.message || "Error al iniciar sesión");
+          return;
         }
-      } else {
-        toast.error("Error inesperado al iniciar sesión");
+
+        if (response?.access_token) {
+          try {
+            await loadUserProfile(response.access_token);
+            toast.success(response.message || "Inicio de sesión exitoso");
+            router.push("/dashboard");
+          } catch (profileError) {
+            console.error("Error loading profile:", profileError);
+            toast.error("Error al cargar el perfil del usuario");
+          }
+        } else {
+          toast.error("Error inesperado al iniciar sesión");
+        }
+      } catch (error) {
+        // Maneja errores de la promesa del login
+        if (error.response?.data) {
+          const errorData = error.response.data;
+          toast.error(errorData.message || "Error al iniciar sesión");
+        } else if (error.request) {
+          toast.error("Error de conexión con el servidor");
+        } else {
+          toast.error("Error inesperado");
+        }
+        console.error("Login error:", error);
       }
-    } catch (error) {
-      if (!error.isAxiosError) {
-        console.error("Non-API error:", error);
-      }
-    }
-  });
-};
+    });
+  };
 
   const handleSocialLogin = (provider) => {
     signIn(provider, {

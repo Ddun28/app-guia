@@ -1,11 +1,11 @@
 export const siteConfig = {
-  name: "DashTail Next js Admin Template",
+  name: "Aplicacion Web Guía",
   description: null,
   theme: "blue",
   layout: "semi-box",
   // semi-box, horizontal, vertical
   hideSideBar: false,
-  sidebarType: "module",
+  sidebarType: "popover",
   // popover, classic, module
   sidebarColor: null,
   navbarType: "floating",

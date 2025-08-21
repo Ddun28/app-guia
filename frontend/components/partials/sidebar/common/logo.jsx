@@ -13,7 +13,7 @@ const SidebarLogo = ({ hovered }) => {
             <SiteLogo className="text-primary h-8 w-8" />
             {(!collapsed || hovered) && (
               <div className="flex-1  text-xl text-primary  font-semibold">
-                DashTail
+                APPGUIA
               </div>
             )}
           </Link>

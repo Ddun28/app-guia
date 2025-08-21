@@ -164,17 +164,21 @@ export default function UserProfilePage() {
   return (
     <div className="max-w-4xl mx-auto mt-8 space-y-6">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900">Mi Perfil</h1>
-        <p className="text-gray-600 mt-2">Actualiza tu información personal y preferencias</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Mi Perfil</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">
+          Actualiza tu información personal y preferencias
+        </p>
       </div>
 
-      <Card className="shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
+      <Card className="shadow-lg dark:border-gray-700 dark:bg-gray-800">
+        <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
           <div className="flex items-center space-x-3">
-            <User className="h-6 w-6 text-blue-600" />
+            <User className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             <div>
-              <CardTitle className="text-2xl">Información Personal</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-2xl text-gray-900 dark:text-white">
+                Información Personal
+              </CardTitle>
+              <CardDescription className="text-gray-600 dark:text-gray-400">
                 Gestiona tus datos básicos y preferencias
               </CardDescription>
             </div>
@@ -187,45 +191,53 @@ export default function UserProfilePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-6">
                 <div className="flex items-center space-x-2">
-                  <User className="h-5 w-5 text-blue-500" />
-                  <h3 className="text-lg font-semibold">Datos Personales</h3>
+                  <User className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Datos Personales
+                  </h3>
                 </div>
                 
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="nombre" className="text-sm font-medium">Nombre *</Label>
+                    <Label htmlFor="nombre" className="text-sm font-medium text-gray-900 dark:text-white">
+                      Nombre *
+                    </Label>
                     <Input
                       id="nombre"
                       type="text"
-                      className="mt-1"
+                      className="mt-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       {...register("nombre", { required: "El nombre es requerido." })}
                       aria-invalid={errors.nombre ? "true" : "false"}
                     />
                     {errors.nombre && (
-                      <p className="mt-1 text-sm text-red-600">{errors.nombre.message}</p>
+                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.nombre.message}</p>
                     )}
                   </div>
 
                   <div>
-                    <Label htmlFor="apellido" className="text-sm font-medium">Apellido *</Label>
+                    <Label htmlFor="apellido" className="text-sm font-medium text-gray-900 dark:text-white">
+                      Apellido *
+                    </Label>
                     <Input
                       id="apellido"
                       type="text"
-                      className="mt-1"
+                      className="mt-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       {...register("apellido", { required: "El apellido es requerido." })}
                       aria-invalid={errors.apellido ? "true" : "false"}
                     />
                     {errors.apellido && (
-                      <p className="mt-1 text-sm text-red-600">{errors.apellido.message}</p>
+                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.apellido.message}</p>
                     )}
                   </div>
 
                   <div>
-                    <Label htmlFor="email" className="text-sm font-medium">Email *</Label>
+                    <Label htmlFor="email" className="text-sm font-medium text-gray-900 dark:text-white">
+                      Email *
+                    </Label>
                     <Input
                       id="email"
                       type="email"
-                      className="mt-1 bg-gray-100"
+                      className="mt-1 bg-gray-100 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
                       disabled
                       {...register("email", { 
                         required: "El email es requerido.",
@@ -242,17 +254,21 @@ export default function UserProfilePage() {
               {/* Sección de perfil */}
               <div className="space-y-6">
                 <div className="flex items-center space-x-2">
-                  <Calendar className="h-5 w-5 text-green-500" />
-                  <h3 className="text-lg font-semibold">Información Adicional</h3>
+                  <Calendar className="h-5 w-5 text-green-500 dark:text-green-400" />
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Información Adicional
+                  </h3>
                 </div>
                 
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="edad" className="text-sm font-medium">Edad</Label>
+                    <Label htmlFor="edad" className="text-sm font-medium text-gray-900 dark:text-white">
+                      Edad
+                    </Label>
                     <Input
                       id="edad"
                       type="number"
-                      className="mt-1"
+                      className="mt-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       min="13"
                       max="120"
                       {...register("edad", {
@@ -261,25 +277,33 @@ export default function UserProfilePage() {
                       })}
                     />
                     {errors.edad && (
-                      <p className="mt-1 text-sm text-red-600">{errors.edad.message}</p>
+                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.edad.message}</p>
                     )}
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="sexo" className="text-sm font-medium">Sexo</Label>
+                      <Label htmlFor="sexo" className="text-sm font-medium text-gray-900 dark:text-white">
+                        Sexo
+                      </Label>
                       <Controller
                         name="sexo"
                         control={control}
                         render={({ field }) => (
                           <Select value={field.value} onValueChange={field.onChange}>
-                            <SelectTrigger className="mt-1">
+                            <SelectTrigger className="mt-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                               <SelectValue placeholder="Seleccionar..." />
                             </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="masculino">Masculino</SelectItem>
-                              <SelectItem value="femenino">Femenino</SelectItem>
-                              <SelectItem value="otro">Otro</SelectItem>
+                            <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
+                              <SelectItem value="masculino" className="dark:hover:bg-gray-700">
+                                Masculino
+                              </SelectItem>
+                              <SelectItem value="femenino" className="dark:hover:bg-gray-700">
+                                Femenino
+                              </SelectItem>
+                              <SelectItem value="otro" className="dark:hover:bg-gray-700">
+                                Otro
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                         )}
@@ -287,20 +311,30 @@ export default function UserProfilePage() {
                     </div>
 
                     <div>
-                      <Label htmlFor="estado_civil" className="text-sm font-medium">Estado Civil</Label>
+                      <Label htmlFor="estado_civil" className="text-sm font-medium text-gray-900 dark:text-white">
+                        Estado Civil
+                      </Label>
                       <Controller
                         name="estado_civil"
                         control={control}
                         render={({ field }) => (
                           <Select value={field.value} onValueChange={field.onChange}>
-                            <SelectTrigger className="mt-1">
+                            <SelectTrigger className="mt-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                               <SelectValue placeholder="Seleccionar..." />
                             </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="soltero">Soltero/a</SelectItem>
-                              <SelectItem value="casado">Casado/a</SelectItem>
-                              <SelectItem value="divorciado">Divorciado/a</SelectItem>
-                              <SelectItem value="viudo">Viudo/a</SelectItem>
+                            <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
+                              <SelectItem value="soltero" className="dark:hover:bg-gray-700">
+                                Soltero/a
+                              </SelectItem>
+                              <SelectItem value="casado" className="dark:hover:bg-gray-700">
+                                Casado/a
+                              </SelectItem>
+                              <SelectItem value="divorciado" className="dark:hover:bg-gray-700">
+                                Divorciado/a
+                              </SelectItem>
+                              <SelectItem value="viudo" className="dark:hover:bg-gray-700">
+                                Viudo/a
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                         )}
@@ -309,24 +343,26 @@ export default function UserProfilePage() {
                   </div>
 
                   <div>
-                    <Label htmlFor="fecha_nacimiento" className="text-sm font-medium">Fecha de Nacimiento</Label>
+                    <Label htmlFor="fecha_nacimiento" className="text-sm font-medium text-gray-900 dark:text-white">
+                      Fecha de Nacimiento
+                    </Label>
                     <Input
                       id="fecha_nacimiento"
                       type="date"
-                      className="mt-1"
+                      className="mt-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       {...register("fecha_nacimiento")}
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="telefono" className="text-sm font-medium">
+                    <Label htmlFor="telefono" className="text-sm font-medium text-gray-900 dark:text-white">
                       <Phone className="inline h-4 w-4 mr-1" />
                       Teléfono
                     </Label>
                     <Input
                       id="telefono"
                       type="tel"
-                      className="mt-1"
+                      className="mt-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       {...register("telefono", {
                         pattern: {
                           value: /^[0-9+\- ]+$/,
@@ -335,39 +371,43 @@ export default function UserProfilePage() {
                       })}
                     />
                     {errors.telefono && (
-                      <p className="mt-1 text-sm text-red-600">{errors.telefono.message}</p>
+                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.telefono.message}</p>
                     )}
                   </div>
                 </div>
               </div>
             </div>
 
-            <Separator />
+            <Separator className="dark:bg-gray-700" />
 
             {/* Sección de ubicación */}
             <div className="space-y-6">
               <div className="flex items-center space-x-2">
-                <MapPin className="h-5 w-5 text-orange-500" />
-                <h3 className="text-lg font-semibold">Ubicación</h3>
+                <MapPin className="h-5 w-5 text-orange-500 dark:text-orange-400" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Ubicación</h3>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <Label htmlFor="ubicacion_ciudad" className="text-sm font-medium">Ciudad</Label>
+                  <Label htmlFor="ubicacion_ciudad" className="text-sm font-medium text-gray-900 dark:text-white">
+                    Ciudad
+                  </Label>
                   <Input
                     id="ubicacion_ciudad"
                     type="text"
-                    className="mt-1"
+                    className="mt-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     placeholder="Ej: Caracas"
                     {...register("ubicacion_ciudad")}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="ubicacion_pais" className="text-sm font-medium">País</Label>
+                  <Label htmlFor="ubicacion_pais" className="text-sm font-medium text-gray-900 dark:text-white">
+                    País
+                  </Label>
                   <Input
                     id="ubicacion_pais"
                     type="text"
-                    className="mt-1"
+                    className="mt-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     placeholder="Ej: Venezuela"
                     {...register("ubicacion_pais")}
                   />
@@ -375,24 +415,25 @@ export default function UserProfilePage() {
               </div>
             </div>
 
-            <Separator />
+            <Separator className="dark:bg-gray-700" />
 
             {/* Sección de contraseña */}
             <div className="space-y-6">
               <div className="flex items-center space-x-2">
-                <Lock className="h-5 w-5 text-red-500" />
-                <h3 className="text-lg font-semibold">Seguridad</h3>
+                <Lock className="h-5 w-5 text-red-500 dark:text-red-400" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Seguridad</h3>
               </div>
               
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="new_password" className="text-sm font-medium">
+                  <Label htmlFor="new_password" className="text-sm font-medium text-gray-900 dark:text-white">
                     Nueva contraseña (opcional)
                   </Label>
                   <div className="relative mt-1">
                     <Input
                       id="new_password"
                       type={showPassword ? "text" : "password"}
+                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       placeholder="Mínimo 6 caracteres"
                       {...register("new_password", {
                         minLength: {
@@ -403,25 +444,25 @@ export default function UserProfilePage() {
                     />
                     <button
                       type="button"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
                   {errors.new_password && (
-                    <p className="mt-1 text-sm text-red-600">{errors.new_password.message}</p>
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.new_password.message}</p>
                   )}
                 </div>
 
                 <div>
-                  <Label htmlFor="new_password_confirmation" className="text-sm font-medium">
+                  <Label htmlFor="new_password_confirmation" className="text-sm font-medium text-gray-900 dark:text-white">
                     Confirmar contraseña
                   </Label>
                   <Input
                     id="new_password_confirmation"
                     type={showPassword ? "text" : "password"}
-                    className="mt-1"
+                    className="mt-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     placeholder="Repite tu contraseña"
                     {...register("new_password_confirmation", {
                       validate: (value) =>
@@ -429,7 +470,7 @@ export default function UserProfilePage() {
                     })}
                   />
                   {errors.new_password_confirmation && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">
                       {errors.new_password_confirmation.message}
                     </p>
                   )}
@@ -443,13 +484,14 @@ export default function UserProfilePage() {
                 variant="outline"
                 onClick={() => resetForm(user)}
                 disabled={loading}
+                className="dark:border-gray-600 dark:text-white dark:hover:bg-gray-700"
               >
                 Cancelar
               </Button>
               <Button
                 type="submit"
                 disabled={loading || (!isDirty && !newPassword)}
-                className="min-w-32 bg-blue-600 hover:bg-blue-700"
+                className="min-w-32 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
               >
                 {loading ? (
                   <>

@@ -1,4 +1,4 @@
-import { IsOptional, IsNumber, Min, Max, IsString, IsIn, IsEmail, IsNotEmpty } from 'class-validator';
+import { IsOptional, IsNumber, Min, Max, IsString, IsIn, IsEmail, IsNotEmpty, MinLength, Validate, Equals } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 
 export class UpdateFullProfileDto {
@@ -14,6 +14,16 @@ export class UpdateFullProfileDto {
   @IsEmail()
   @IsNotEmpty()
   email: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(6, { message: 'La nueva contraseña debe tener al menos 6 caracteres' })
+  new_password?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(6, { message: 'La confirmación de contraseña debe tener al menos 6 caracteres' })
+  new_password_confirmation?: string;
 
   // Profile fields
   @IsOptional()
@@ -34,8 +44,8 @@ export class UpdateFullProfileDto {
   sexo?: string;
 
   @IsOptional()
-  @Transform(({ value }) => value ? new Date(value) : null) // Transforma string a Date
-  fecha_nacimiento?: Date; // Tipo Date pero acepta string
+  @Transform(({ value }) => value ? new Date(value) : null)
+  fecha_nacimiento?: Date;
 
   @IsOptional()
   @IsString()

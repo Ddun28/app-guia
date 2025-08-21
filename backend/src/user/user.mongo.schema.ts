@@ -7,6 +7,8 @@ export const UserSchema = new Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   email_verified_at: { type: Date, default: null },
+  reset_password_token: { type: String, default: null },
+  reset_password_expires: { type: Date, default: null },
   profile: { 
     type: Types.ObjectId, 
     ref: 'UserProfile',
@@ -24,12 +26,13 @@ export interface User extends Document {
   email: string;
   password: string;
   email_verified_at?: Date | null;
-   profile?: Types.ObjectId | UserProfile | null;
+  reset_password_token?: string | null;
+  reset_password_expires?: Date | null;
+  profile?: Types.ObjectId | UserProfile | null;
   createdAt: Date;
   updatedAt: Date;
 }
 
-// Esquema de verificación (opcional)
 export const UserVerificationSchema = new Schema({
   user_id: { type: Types.ObjectId, ref: 'User', required: true },
   token: { type: String, required: true },

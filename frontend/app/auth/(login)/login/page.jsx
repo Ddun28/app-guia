@@ -41,16 +41,16 @@ const LoginPage = () => {
 
                 <div className="text-4xl leading-[50px] 2xl:text-6xl 2xl:leading-[72px] font-semibold mt-2.5">
                   <span className="text-default-600 dark:text-default-300 ">
-                    Unlock <br />
-                    Your Project <br />
+                    Tu App <br />
+                    Tu Guía <br />
                   </span>
                   <span className="text-default-900 dark:text-default-50">
-                    Performance
+                    Mejora
                   </span>
                 </div>
                 <div className="mt-5 2xl:mt-8 text-default-900 dark:text-default-200  text-2xl font-medium">
-                  You will never know everything. <br />
-                  But you will know more...
+                  Ayuda a Organizar en lugares que no conoces. <br />
+                  Accede y disfruta de la experiencia...
                 </div>
               </div>
             </div>

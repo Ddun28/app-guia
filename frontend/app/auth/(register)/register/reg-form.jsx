@@ -59,11 +59,15 @@ const RegForm = () => {
   const onSubmit = async (data) => {
     setIsPending(true);
     try {
-      // Eliminamos confirmPassword antes de enviar
+
       const { confirmPassword, ...userData } = data;
-      
-      // Usamos nuestro servicio para crear el usuario
+
       const response = await createUser(userData);
+
+      if (response.data.result === null && response.message) {
+
+        throw new Error(response.message);
+      }
       
       if (response?.message) {
         toast.success(response.message);
@@ -73,7 +77,16 @@ const RegForm = () => {
       }
     } catch (error) {
       console.error("Registration error:", error);
-      toast.error(error.response?.data?.message || "Error al registrar el usuario");
+
+      if (error.message === "El correo electrónico ya está registrado") {
+        toast.error( error.message);
+      } else if (error.message === "El email es requerido") {
+        toast.error( error.message);
+      } else if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error(error.message || "Error al registrar el usuario");
+      }
     } finally {
       setIsPending(false);
     }

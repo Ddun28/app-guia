@@ -30,7 +30,6 @@ export const deleteUser = async (id) => {
   return response.data;
 };
 
-// Servicios de verificación
 export const verifyEmailToken = async (token) => {
   const response = await api.post("/users/verify", { token });
   return response.data;
@@ -43,5 +42,20 @@ export const resendVerificationEmail = async (email) => {
 
 export const checkEmailVerification = async (userId) => {
   const response = await api.get(`/users/${userId}/verification-status`);
+  return response.data;
+};
+
+export const forgotPassword = async (email) => {
+  const response = await api.post("/users/forgot-password", { email });
+  return response.data;
+};
+
+export const resetPassword = async (token, password) => {
+  const response = await api.post(`/users/reset-password/${token}`, { password });
+  return response.data;
+};
+
+export const verifyResetToken = async (token) => {
+  const response = await api.post(`/users/verify-reset-token/${token}`);
   return response.data;
 };

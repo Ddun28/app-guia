@@ -5,8 +5,10 @@ const PUBLIC_ROUTES = [
   '/auth/login',
   '/auth/register',
   '/auth/verify',
-  '/auth/forgot-password',
-  '/auth/reset-password'
+  '/auth/forgot',
+  '/auth/reset-password',
+  '/auth/lock',
+  '/auth/create-password',
 ];
 
 export function middleware(request) {

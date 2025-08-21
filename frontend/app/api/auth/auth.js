@@ -1,4 +1,4 @@
-import api from '@/app/api/api';
+import api, { setManualLogout } from '@/app/api/api';
 
 export const login = (credentials) => 
   api.post('/auth/login', credentials, {
@@ -11,8 +11,10 @@ export const login = (credentials) =>
     return response.data;
   });
 
-export const logout = () => 
-  api.post('/auth/logout', {}, {
+export const logout = () => {
+  setManualLogout();
+  
+  return api.post('/auth/logout', {}, {
     headers: {
       'skipInterceptor': true
     }
@@ -20,8 +22,18 @@ export const logout = () =>
   .then(response => {
     document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     document.cookie = 'user_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+
+    setTimeout(() => {
+    }, 1000);
+    
     return response.data;
+  })
+  .catch(error => {
+    document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'user_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    throw error;
   });
+};
 
 export const getProfile = () => {
   

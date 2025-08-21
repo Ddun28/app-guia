@@ -1,4 +1,5 @@
 import { DashBoard, User } from "@/components/svg";
+import { Utensils, Calculator } from "lucide-react";
 
 export const menusConfig = {
   mainNav: [
@@ -6,6 +7,16 @@ export const menusConfig = {
       title: "Dashboard",
       icon: DashBoard,
       href: "/dashboard",
+    },
+    {
+      title: "Guía de Nutrición",
+      icon: Utensils,
+      href: "/nutrition-guide",
+    },
+    {
+      title: "Calculadora de Porciones",
+      icon: Calculator,
+      href: "/portion-calculator",
     },
     {
       title: "Perfil",
@@ -19,6 +30,16 @@ export const menusConfig = {
         title: "Dashboard",
         icon: DashBoard,
         href: "/dashboard",
+      },
+      {
+        title: "Guía de Nutrición",
+        icon: Utensils,
+        href: "/nutrition-guide",
+      },
+      {
+        title: "Calculadora de Porciones",
+        icon: Calculator,
+        href: "/portion-calculator",
       },
       {
         title: "Mi Perfil",
@@ -35,6 +56,20 @@ export const menusConfig = {
         title: "Dashboard",
         icon: DashBoard,
         href: "/dashboard",
+      },
+      {
+        isHeader: true,
+        title: "Herramientas",
+      },
+      {
+        title: "Guía de Nutrición",
+        icon: Utensils,
+        href: "/nutrition-guide",
+      },
+      {
+        title: "Calculadora de Porciones",
+        icon: Calculator,
+        href: "/portion-calculator",
       },
       {
         isHeader: true,

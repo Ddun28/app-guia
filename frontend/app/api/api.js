@@ -1,11 +1,17 @@
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
-const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL 
+const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const api = axios.create({
   baseURL: baseURL
 });
+
+let isManualLogout = false;
+
+export const setManualLogout = () => {
+  isManualLogout = true;
+};
 
 api.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
@@ -47,7 +53,7 @@ api.interceptors.response.use(
           break;
 
         case 401: 
-          if (typeof window !== "undefined") {
+          if (!isManualLogout && typeof window !== "undefined") {
             toast.error('Tu sesión ha expirado. Serás redirigido para iniciar sesión', {
               duration: 4000,
               position: 'top-center',
