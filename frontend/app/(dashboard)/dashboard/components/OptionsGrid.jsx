@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 const options = [
   {
@@ -19,13 +20,13 @@ const options = [
     route: '/portion-calculator',
     available: true
   },
-  {
+    {
     id: 3,
-    title: 'Planificador de Menús',
-    description: 'Crea menús semanales personalizados',
-    icon: '📅',
-    route: '/meal-planner',
-    available: false
+    title: 'Escáner de Frutas',
+    description: 'Analiza el estado de frutas usando tu cámara',
+    icon: '📷',
+    route: '/FruitScanner',
+    available: true
   },
   {
     id: 4,
@@ -40,12 +41,12 @@ const options = [
 export default function OptionsGrid() {
   const router = useRouter();
 
-  const handleNavigation = () => {
+  const handleNavigation = (route, available) => {  
     if (!available) {
-      alert('Esta funcionalidad estará disponible pronto!');
+      toast.error('Esta funcionalidad estará disponible pronto!');
       return;
     }
-    router.push(route);
+    router.push(route);  
   };
 
   return (
@@ -61,7 +62,7 @@ export default function OptionsGrid() {
             className={`p-6 rounded-lg border cursor-pointer transition-all duration-200 ${
               option.available
                 ? 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-400 hover:shadow-lg dark:hover:shadow-lg hover:scale-105'
-                : 'bg-gray-100 dark:bg-gray-900 border-gray-300 dark:border-gray-600 opacity-70'
+                : 'bg-gray-100 dark:bg-gray-900 border-gray-300 dark:border-gray-600 opacity-70 cursor-not-allowed'
             }`}
           >
             <div className="text-4xl mb-4">{option.icon}</div>

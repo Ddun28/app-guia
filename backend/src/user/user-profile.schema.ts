@@ -3,7 +3,7 @@ import { User } from './user.mongo.schema';
 
 // Definición de la clase del modelo
 export class UserProfileModel {
-  static modelName = 'UserProfile'; // Nombre que usaremos en todas las referencias
+  static modelName = 'UserProfile'; 
 }
 
 // Esquema
