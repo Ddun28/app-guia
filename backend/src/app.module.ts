@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { EmailModule } from './email/email.module';
 import { AuthModule } from './user/auth/auth.module';
 import { UserProfilesModule } from './user/user-profiles/user-profiles.module';
+import { UrbanKnowledgeModule } from './urban-knowledge/urban-knowledge.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { UserProfilesModule } from './user/user-profiles/user-profiles.module';
     UserModule,
     UserProfilesModule,
     AuthModule,
-    EmailModule
+    EmailModule,
+    UrbanKnowledgeModule
   ],
   controllers: [AppController],
   providers: [AppService],

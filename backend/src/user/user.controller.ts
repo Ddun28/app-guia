@@ -26,9 +26,6 @@ import { EmailService } from '../email/email.service';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { UpdateFullProfileDto } from './dto/update-full-profile.dto'; 
 import { UserProfilesService } from './user-profiles/user-profiles.service';
-import { User } from './user.mongo.schema';
-import * as bcrypt from 'bcrypt'; 
-import mongoose from 'mongoose';
 
 @Controller('users')
 @UseInterceptors(ResponseInterceptor)

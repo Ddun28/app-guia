@@ -1,9 +1,5 @@
 import { Schema, Document, Types, Model } from 'mongoose';
-import { User } from './user.mongo.schema';
-
-export class UserProfileModel {
-  static modelName = 'UserProfile'; 
-}
+import { User } from 'src/user/user.mongo.schema'; 
 
 export const UserProfileSchema = new Schema({
   user_id: { 
@@ -53,3 +49,6 @@ export interface UserProfile extends Document {
 }
 
 export type UserProfileModelType = Model<UserProfile>;
+
+export const USER_PROFILE_MODEL = 'UserProfile';
+export type UserProfileDocument = UserProfile;
